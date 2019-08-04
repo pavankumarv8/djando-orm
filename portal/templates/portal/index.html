@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block stylesheet %}
+<style type="text/css">
+.main-data{
+	margin-left: 15px;
+  margin-right: 15px;
+
+}
+img {
+  display: block;
+  margin: 0 auto;
+}
+
+.highlight {
+    background: blue;
+}
+
+
+</style>
+{% endblock %}
+
+{% block title %}
+	Portal
+{% endblock %}
+
+{% block content %}
+
+<a href="#" data-toggle="modal" class='excel-upload' data-target="#importXl">Import ExcelSheet</a>
+
+
+<img src="{% static 'portal/images/hplogo.jpg' %}" alt="logo" width="100" height="100"> 
+<p>
+<h1 align="center">HP Voltage Service  Portal</h1>
+
+</p>
+
+
+ <div class="servive">
+  <div class="card">
+    <!-- <div class="card-header"> -->
+      <h2 class="mb-0">
+        <button class="btn " type="button">
+          <h3>Total Service Request :<b> {{data.0.0}} </b></h3>
+        </button>
+      </h2>
+    <!-- </div> -->
+   <!--  <div class="card-body">
+  	</div> -->
+
+    <div class="accordion main-data" id="accordionExample">
+	  <div class="card">
+	    <div class="card-header" id="headingOne">
+	      <h2 class="mb-0">
+	        <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+	          <h5>Service Request By Environment </h5>
+	        </button>
+	      </h2>
+	    </div>
+
+	    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+	      <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                  <table id="env-table" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Environment</th>
+                        <th>Total Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in environment %}
+                        <tr id="byenvironment{{ forloop.counter }}" class="environment" data-id={{data.0}}>
+                          <td>{{data.0}}</td>
+                          <td>{{data.1}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+              </div>
+              <div class="col-sm" id="byUserNameMain">
+                  
+              </div>
+              <div class="col-sm" id="byMonthEnvMain">
+              </div>
+            </div>
+          </div>
+	      </div>
+	    </div>
+	  </div>
+	  <div class="card">
+	    <div class="card-header" id="headingTwo">
+	      <h2 class="mb-0">
+	        <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+	          <h5>Service Request By User Name</h5>
+	        </button>
+	      </h2>
+	    </div>
+	    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+	      <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                  <table id="username-table" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>User Name</th>
+                        <th>Total COUNT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in byuser %}
+                      <tr id= "byuser{{ forloop.counter }}" onclick="userEnv('{{data.0}}')" data-id={{data.0}}>
+                          <td>{{data.0}}</td>
+                          <td>{{data.1}}</td>
+                        </tr>
+                      {% endfor %}
+                     </tbody>
+                  </table>
+              </div>
+              <div class="col-sm" id="userByEnvMain">
+              </div>
+              <div class="col-sm" id="userByEnvBymonthMain">
+              </div>
+            </div>
+          </div>
+	      </div>
+	    </div>
+	  </div>
+	  <div class="card">
+	    <div class="card-header" id="headingThree">
+	      <h2 class="mb-0">
+	        <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+	          <h5>Service Request By Month</h5>
+	        </button>
+	      </h2>
+	    </div>
+	    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+	     <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                  <table id="month-table" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        <th>Total Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in byMonth %}
+                        <tr onclick="envByMonth('{{data.0|date:'n' }}','{{data.0|date:'Y'}}')">
+                          <td>{{data.0|date:"M-Y"}}</td>
+                          <td>{{data.1}}</td>
+
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+              </div>
+              <div class="col-sm" id="envBydateMain">
+              </div>
+              <div class="col-sm" id="userCountByEnvBymonthMain">
+              </div>
+            </div>
+          </div>
+        </div>
+	    </div>
+	  </div>
+	</div>
+
+
+  </div>
+
+</div>
+
+
+<!-- Excel Model start here -->
+<div class="modal fade" id="importXl" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Import Excel Sheet</h4>
+      </div>
+      <style type="text/css">
+        .modal-body {
+            padding-top: 0 !important;
+        }
+      </style>
+      <div class="modal-body">
+       <form class='excel-form1' enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type='file' name='file' id='myfile'>
+      </div>
+      <div class="modal-footer"> 
+        <button type="submit" class="btn btn-primary pull-right excel-form"/>Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+       </form>
+    </div>
+
+  </div>
+</div>
+<!-- Excel model end -->
+
+
+{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript">
+
+// This ajax to upload Excel sheet
+
+var monthNames = ["January", "February", "March", "April", "May","June","July", "August", "September", "October", "November","December"]
+
+$(document).on('submit', ".excel-form1", function(e){
+      e.preventDefault();
+          $(this).ajaxSubmit({
+              url: 'excel-upload/',
+              type: 'POST',
+              dataType: 'json',
+              clearForm: false,
+              resetForm: false,
+              success: function(response){
+               // close modal box
+               if (response.status==200){
+                  $('#importXl').modal('hide');
+                  $('#myfile').val('');
+                  // SweetAlert (swal) is a library to use and show alert messages.
+                  swal("Success!", "File successfully uploaded", "success")
+                }
+              },
+              error: function(result){
+               $('#importXl').modal('hide');
+               $('#myfile').val('');
+               swal('Oops!', 'Upload failed, Check excel-sheet', 'error')        
+        }
+    });
+})
+
+/*$(document).ready(function () {
+    $('tr').click(function () {
+        //Check to see if background color is set or if it's set to white.
+        if(this.style.background == "" || this.style.background =="white") {
+            $(this).css('background', 'red');
+        }
+        else {
+            $(this).css('background', 'white');
+        }
+    });
+});*/
+
+$("#env-table tr:not(:first)").click(function() {
+    var selected = $(this).hasClass("highlight");
+    $("#env-table tr").removeClass("highlight");
+    if(!selected)
+      $(this).addClass("highlight");
+});
+
+$("#username-table tr:not(:first)").click(function() {
+    var selected = $(this).hasClass("highlight");
+    $("#username-table tr").removeClass("highlight");
+    if(!selected)
+      $(this).addClass("highlight");
+});
+
+$("#month-table tr:not(:first)").click(function() {
+    var selected = $(this).hasClass("highlight");
+    $("#month-table tr").removeClass("highlight");
+    if(!selected)
+      $(this).addClass("highlight");
+});
+
+
+$('.environment').click(function(){
+  var env = $(this).attr("data-id")
+  $.ajax({
+    type: "GET",
+    url: "env/",
+    data: {"environment":env},
+    success: function(data){
+      if(data.status_code == "200"){
+        $('#byUserNameMain').text('')
+        $('#byUserNameMain').append('<table id="username-by-env" class="table table-bordered"><thead><tr>\
+                                          <th>USERNAME</th>\
+                                          <th>Total</th>\
+                                        </tr>\
+                                        </thead>\
+                                      <tbody id="byUserName">\
+                                      </tbody>\
+                                    </table>')
+        $('#byMonthEnvMain').text('')
+        $(data.data).each(function( index ) {
+          $('#byUserName').append(
+              "<tr onclick=byMonth('"+this[0]+"','"+data.env+"')\
+              data-username="+this[0]+" data-env="+data.env+"><td>"+this[0]+"</td>\
+                    <td>"+this[1]+"</td>\
+               </tr>"
+              )
+          });
+        }
+
+        $("#username-by-env tr:not(:first)").click(function() {
+          var selected = $(this).hasClass("highlight");
+          $("#username-by-env tr").removeClass("highlight");
+          if(!selected)
+            $(this).addClass("highlight");
+        });
+      }
+  });
+});
+
+
+function byMonth(username, env) {
+  $.ajax({
+    type: "GET",
+    url: "env-by-month/",
+    data: {"username":username, "environment":env,},
+    success: function(data){
+      if(data.status_code == "200"){
+    
+          $('#byMonthEnvMain').text('')
+          debugger
+          $('#byMonthEnvMain').append('<table id="data3" class="table table-bordered">\
+                                        <thead>\
+                                          <tr>\
+                                            <th>By Month</th>\
+                                            <th>Total</th>\
+                                          </tr>\
+                                        </thead>\
+                                        <tbody id="byMonthEnv">\
+                                        </tbody>\
+                                      </table>')
+          var data = JSON.parse(data.data)
+          $(data).each(function( index ) {
+            $('#byMonthEnv').append(
+                "<tr><td>"+monthNames[parseInt(this[0].split("-")[1]-1)]+"-"+this[0].split("-")[0]+"</td>\
+                      <td>"+this[1]+"</td>\
+                 </tr>"
+                )
+            });
+        }
+        $("#data3 tr:not(:first)").click(function() {
+          var selected = $(this).hasClass("highlight");
+          $("#data3 tr").removeClass("highlight");
+          if(!selected)
+            $(this).addClass("highlight");
+        });
+      }
+  });
+}
+
+
+function userEnv(username) {
+  $.ajax({
+    type: "GET",
+    url: "env-by-users/",
+    data: {"username":username},
+    success: function(data){
+      if(data.status_code == "200"){
+        $('#userByEnvMain').text('')
+        $('#userByEnvMain').append('<table id="env-by-username" class="table table-bordered">\
+                                    <thead>\
+                                      <tr>\
+                                        <th>Environment</th>\
+                                        <th>Total</th>\
+                                      </tr>\
+                                    </thead>\
+                                    <tbody id="userByEnv">\
+                                  </tbody>\
+                                  </table>')
+        $('#userByEnvBymonthMain').text('')
+        $(data.data).each(function( index ) {
+          $('#userByEnv').append(
+              "<tr onclick=userEnvbyMonth('"+this[0]+"','"+data.username+"')>\
+              <td>"+this[0]+"</td>\
+                    <td>"+this[1]+"</td>\
+               </tr>"
+              )
+          });
+        }
+        $("#env-by-username tr:not(:first)").click(function() {
+          var selected = $(this).hasClass("highlight");
+          $("#env-by-username tr").removeClass("highlight");
+          if(!selected)
+            $(this).addClass("highlight");
+        });
+    }
+  });
+}
+
+
+function userEnvbyMonth(environment, username) {
+  $.ajax({
+    type: "GET",
+    url: "env-by-month/",
+    data: {"username":username, "environment":environment},
+    success: function(data){
+      if(data.status_code == "200"){
+       $('#userByEnvBymonthMain').text('')
+
+       $('#userByEnvBymonthMain').append('<table id="userenv-by-month" class="table table-bordered">\
+                            <thead>\
+                              <tr>\
+                                <th>By Month</th>\
+                                <th>Total</th>\
+                              </tr>\
+                            </thead>\
+                            <tbody id="userByEnvBymonth">\
+                            </tbody>\
+                          </table>')
+        var data = JSON.parse(data.data)
+        $(data).each(function( index ) {
+          $('#userByEnvBymonth').append(
+              "<tr><td>"+monthNames[parseInt(this[0].split("-")[1]-1)]+"-"+this[0].split("-")[0]+"</td>\
+                    <td>"+this[1]+"</td>\
+               </tr>"
+              )
+          });
+      }
+      $("#userenv-by-month tr:not(:first)").click(function() {
+        var selected = $(this).hasClass("highlight");
+        $("#userenv-by-month tr").removeClass("highlight");
+        if(!selected)
+          $(this).addClass("highlight");
+      });
+    }
+  });
+}
+
+
+function envByMonth(month, year) {
+  $.ajax({
+    type: "GET",
+    url: "environments-by-month/",
+    data: {"month":month, "year":year},
+    success: function(data){
+      if(data.status_code == "200"){
+       $('#envBydateMain').text('')
+       $('#envBydateMain').append('<table id="env-by-month" class="table table-bordered">\
+                                <thead>\
+                                  <tr>\
+                                    <th>Environment</th>\
+                                    <th>Total Count</th>\
+                                  </tr>\
+                                </thead>\
+                                  <tbody id="envBydate">\
+                                </tbody>\
+                              </table>')
+       $('#userCountByEnvBymonthMain').text('')
+        $(data.data).each(function( index ) {
+          $('#envBydate').append(
+              "<tr onclick=userEnvbyMonthByEnv('"+this.environment+"','"+data.month+"')><td>"+this.environment+"</td><td>"+this.name_count+"</td>\
+               </tr>"
+              )
+          });
+      }
+      $("#env-by-month tr:not(:first)").click(function() {
+        var selected = $(this).hasClass("highlight");
+        $("#env-by-month tr").removeClass("highlight");
+        if(!selected)
+          $(this).addClass("highlight");
+      });
+    }
+  });
+}
+
+
+function userEnvbyMonthByEnv(environment, month) {
+  $.ajax({
+    type: "GET",
+    url: "user-by-environments-by-month/",
+    data: {"month":month, 'environment':environment},
+    success: function(data){
+      if(data.status_code == "200"){
+       $('#userCountByEnvBymonthMain').text('')
+
+       $('#userCountByEnvBymonthMain').append('<table id="userenv-by-month-by-env" class="table table-bordered">\
+                          <thead>\
+                            <tr>\
+                              <th>UserName</th>\
+                              <th>Total</th>\
+                            </tr>\
+                          </thead>\
+                          <tbody id="userCountByEnvBymonth">\
+                          </tbody>\
+                        </table>')
+
+        $(data.data).each(function( index ) {
+          $('#userCountByEnvBymonth').append(
+              "<tr><td>"+this.username+"</td>\
+                    <td>"+this.name_count+"</td>\
+               </tr>"
+              )
+          });
+      }
+      $("#userenv-by-month-by-env tr:not(:first)").click(function() {
+        var selected = $(this).hasClass("highlight");
+        $("#userenv-by-month-by-env tr").removeClass("highlight");
+        if(!selected)
+          $(this).addClass("highlight");
+      });
+    }
+  });
+}
+
+</script>
+{% endblock %}
+
+
